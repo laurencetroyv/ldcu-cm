@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:ldcu/src/pages/tab_bar_navigation.dart';
+
 void main() {
   runApp(const MainApp());
 }
@@ -9,11 +11,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Liceo de Cagayan de University - Campus Map'),
-        ),
+    return MaterialApp(
+      home: const TabBarNavigation(),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.light().copyWith(
+        colorScheme: ThemeData.light().colorScheme.copyWith(
+              primary: const Color(0xFF89201a),
+              secondary: const Color(0xFF89201a),
+            ),
       ),
     );
   }
