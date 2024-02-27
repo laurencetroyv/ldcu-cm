@@ -1,0 +1,17 @@
+const kAddSection = "Add Section";
+const kName = "Name";
+const kNameHint = "Enter the section name";
+const kCode = "Code";
+const kCodeHint = "Enter the section code";
+const kProf = "Prof. (Optional)";
+const kProfHint = "Enter the section professor";
+const kRoom = "Room";
+const kRoomHint = "Enter the room number";
+const kFloor = "Floor";
+const kFloorHint = "Enter the floor number";
+const kBuilding = "Building";
+const kBuildingHint = "Enter the building name";
+const kStartTime = "Start Time";
+const kStartTimeHint = "Enter the section start time";
+const kEndTime = "End Time";
+const kEndTimeHint = "Enter the section end time";
