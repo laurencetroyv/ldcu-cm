@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ldcu/src/constants/constants.dart';
+import 'package:ldcu/src/pages/unvisual_map.dart';
 import 'package:ldcu/src/pages/visual_map.dart';
+import 'package:ldcu/src/provider/switch_provider.dart';
 
 import 'add_section.dart';
 import 'settings.dart';
@@ -13,6 +15,8 @@ class TabBarNavigation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isMap3D = ref.watch(switchMapProvider);
+
     return SafeArea(
       child: DefaultTabController(
         length: 6,
@@ -66,11 +70,11 @@ class TabBarNavigation extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const VisualMap(),
+                  builder: (context) => isMap3D ? const VisualMap() : const UnvisualMap(),
                 ),
               );
             },
-            child: const Icon(Icons.map),
+            child: Icon(isMap3D ? Icons.map : Icons.map_outlined),
           ),
         ),
       ),
