@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_local_notifications: ^16.3.2
+  flutter_osm_plugin: ^0.70.4
   flutter_riverpod: ^2.4.10
   flutter_svg: ^2.0.10+1
   gap: ^3.0.1
