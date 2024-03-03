@@ -3,18 +3,15 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"assets/AssetManifest.bin": "71428841391a5c205ba2d2a2dda64944",
-"assets/AssetManifest.bin.json": "bcf0c8661aaef428cac5dd208a3646ca",
-"assets/AssetManifest.json": "6d56351961af409e5cc0489fadb05e2f",
-"assets/assets/campus-map.gltf": "9da76b1016b31a3082a210689dbdc7bf",
-"assets/assets/campus_perspective.gltf": "a277a27dfb75223f5a02bb420bc7be21",
+const RESOURCES = {"assets/AssetManifest.bin": "b3a981a261dc9d4b5b5d8c70d2df7a48",
+"assets/AssetManifest.bin.json": "0f5373b84e158e159fbc535deceaa0bc",
+"assets/AssetManifest.json": "64a0458ed3dc66dd0cdc506ffc4c33cc",
 "assets/assets/library-campus-map.gltf": "8fc7303630c71d754b668a3388464c91",
-"assets/assets/liceo-campus-map.glb": "5e382bc5ebc1e4142d6fc417c1173012",
 "assets/assets/liceo-campus-map.gltf": "07f45a849614448bbc68b88fbdfce701",
-"assets/assets/visual_map.gltf": "a277a27dfb75223f5a02bb420bc7be21",
+"assets/assets/no-class.svg": "59dd083da66e6d0bce5e497b35aa75ea",
 "assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
-"assets/fonts/MaterialIcons-Regular.otf": "f8fe31bde063f093a6aa41a5f1eb372d",
-"assets/NOTICES": "3af7fdb91637f6710e4ddea91623efd7",
+"assets/fonts/MaterialIcons-Regular.otf": "967f136cde7f8397e515456e70d88010",
+"assets/NOTICES": "872244acbbc3ef3a5c70bb8a917e9dd7",
 "assets/packages/o3d/assets/model-viewer.min.js": "7f3dd99a5c27b30d285da8e8fd969b18",
 "assets/packages/o3d/assets/template.html": "24a1f29951029adea5122572451138fc",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
@@ -34,9 +31,9 @@ const RESOURCES = {"assets/AssetManifest.bin": "71428841391a5c205ba2d2a2dda64944
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "4cc8a7cf85ea645bf9c132bca4ccb875",
-"/": "4cc8a7cf85ea645bf9c132bca4ccb875",
-"main.dart.js": "599accb2ecb3b8fe8f0827dbcf245bb4",
+"index.html": "e4b8c0d0753178f428390778fb545fb4",
+"/": "e4b8c0d0753178f428390778fb545fb4",
+"main.dart.js": "6782969b9235a489f14c6334a145e7e0",
 "manifest.json": "3ea76a7b28ea4d17d4dd2b2fd2fedce9",
 "version.json": "83a2869b011748a9a2693e10eb1d9c45"};
 // The application shell files that are downloaded before a service worker can
