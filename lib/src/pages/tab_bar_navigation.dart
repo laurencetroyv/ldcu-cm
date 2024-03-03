@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ldcu/src/constants/constants.dart';
 import 'package:ldcu/src/pages/unvisual_map.dart';
 import 'package:ldcu/src/pages/visual_map.dart';
-import 'package:ldcu/src/provider/switch_provider.dart';
+import 'package:ldcu/src/provider/settings_provider.dart';
 
 import 'add_section.dart';
 import 'settings.dart';
@@ -15,12 +15,14 @@ class TabBarNavigation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isMap3D = ref.watch(switchMapProvider);
+    bool isMap3D = ref.watch(settingsProvider).isMap3D;
+
+    int currentDay = DateTime.now().weekday - 1;
 
     return SafeArea(
       child: DefaultTabController(
         length: 6,
-        initialIndex: 0,
+        initialIndex: currentDay > 6 ? 0 : currentDay - 1,
         child: Scaffold(
           appBar: AppBar(
             title: const Text(kAppName),
@@ -70,7 +72,8 @@ class TabBarNavigation extends ConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => isMap3D ? const VisualMap() : const UnvisualMap(),
+                  builder: (context) =>
+                      isMap3D ? const VisualMap() : const UnvisualMap(),
                 ),
               );
             },
