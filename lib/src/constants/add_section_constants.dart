@@ -1,10 +1,10 @@
-const kAddSection = "Add Section";
-const kName = "Name";
-const kNameHint = "Enter the section name";
+const kAddSchedule = "Add Schedule";
+const kName = "Subject Name";
+const kNameHint = "Enter the subject name";
 const kCode = "Code";
-const kCodeHint = "Enter the section code";
+const kCodeHint = "Enter the subject code";
 const kProf = "Prof. (Optional)";
-const kProfHint = "Enter the section professor";
+const kProfHint = "Enter the subject professor";
 const kRoom = "Room";
 const kRoomHint = "Enter the room number";
 const kFloor = "Floor";

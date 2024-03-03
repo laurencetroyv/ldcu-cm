@@ -1,9 +1,4 @@
-import 'eac_data.dart';
-import 'liceo_civic_center.dart';
-import 'nac_data.dart';
-import 'rodelsa_hall.dart';
-import 'sac_data.dart';
-import 'wac_data.dart';
+import 'package:ldcu/src/constants/constants.dart';
 
 export 'eac_data.dart';
 export 'liceo_civic_center.dart';
@@ -21,4 +16,11 @@ const data = [
   ...wacData
 ];
 
-const buildings = ["WAC", "NAC", "EAC", "SAC", "LCC", "Rodelsa Hall"];
+const buildings = [
+  kLccBuildingName,
+  kSacBuildingName,
+  kWacBuildingName,
+  kNacBuildingName,
+  kEacBuildingName,
+  kRodelsaName,
+];

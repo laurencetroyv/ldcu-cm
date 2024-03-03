@@ -11,3 +11,21 @@ const kWed = "Wed";
 const kThu = "Thu";
 const kFri = "Fri";
 const kSat = "Sat";
+
+const kMonday = "Monday";
+const kTuesday = "Tuesday";
+const kWednesday = "Wednesday";
+const kThursday = "Thursday";
+const kFriday = "Friday";
+const kSaturday = "Saturday";
+const kSunday = "Sunday";
+
+final days = [
+  kMonday,
+  kTuesday,
+  kWednesday,
+  kThursday,
+  kFriday,
+  kSaturday,
+  kSunday,
+];
