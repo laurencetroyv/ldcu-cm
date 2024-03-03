@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ldcu/src/constants/constants.dart';
+import 'package:ldcu/src/pages/schedule_page.dart';
 import 'package:ldcu/src/pages/unvisual_map.dart';
 import 'package:ldcu/src/pages/visual_map.dart';
 import 'package:ldcu/src/provider/settings_provider.dart';
 
-import 'add_section.dart';
+import 'add_schedule.dart';
 import 'settings.dart';
 
 class TabBarNavigation extends ConsumerWidget {
@@ -42,7 +43,7 @@ class TabBarNavigation extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AddSection()),
+                    MaterialPageRoute(builder: (context) => const AddSchedule()),
                   );
                 },
               ),
@@ -59,15 +60,16 @@ class TabBarNavigation extends ConsumerWidget {
           ),
           body: const TabBarView(
             children: [
-              Text(kMon),
-              Text(kTue),
-              Text(kWed),
-              Text(kThu),
-              Text(kFri),
-              Text(kSat),
+              SchedulePage(kMon),
+              SchedulePage(kTue),
+              SchedulePage(kWed),
+              SchedulePage(kThu),
+              SchedulePage(kFri),
+              SchedulePage(kSat),
             ],
           ),
           floatingActionButton: FloatingActionButton(
+            backgroundColor: const Color(0xFF89201a),
             onPressed: () {
               Navigator.push(
                 context,
@@ -77,7 +79,10 @@ class TabBarNavigation extends ConsumerWidget {
                 ),
               );
             },
-            child: Icon(isMap3D ? Icons.map : Icons.map_outlined),
+            child: Icon(
+              isMap3D ? Icons.map : Icons.map_outlined,
+              color: Colors.white,
+            ),
           ),
         ),
       ),
