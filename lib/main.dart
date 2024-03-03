@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:ldcu/src/models/section_model.dart';
 import 'package:ldcu/src/models/settings_model.dart';
 import 'package:ldcu/src/pages/tab_bar_navigation.dart';
 import 'package:ldcu/src/provider/settings_provider.dart';
@@ -14,11 +15,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
 
-  await BoxCollection.open('ldcu', {'settings', 'course'});
+  await BoxCollection.open('ldcu', {'settings', 'schedule'});
 
   Hive.registerAdapter(SettingsModelAdapter());
+  Hive.registerAdapter(SectionModelAdapter());
 
   Hive.openBox<SettingsModel>('settings');
+  Hive.openBox<SectionModel>('schedule');
 
   runApp(const ProviderScope(child: MainApp()));
 }
