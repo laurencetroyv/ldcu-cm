@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:o3d/o3d.dart';
 
+import 'package:ldcu/src/widgets/search_container.dart';
+
 class BuildingInformation extends ConsumerStatefulWidget {
   const BuildingInformation(
     this.data, {
@@ -26,9 +28,18 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
   final _searchController = SearchController();
   final _o3d = O3DController();
 
+  String get search => _searchController.text;
+
   @override
   Widget build(BuildContext context) {
     final sortedData = widget.data;
+
+    final data = sortedData.where((data) {
+      return data.toString().toLowerCase().contains(search.toLowerCase());
+    }).map((item) {
+      final name = item['name'] as String;
+      return name;
+    }).toList();
 
     return SafeArea(
       child: Scaffold(
@@ -37,58 +48,20 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SearchAnchor(
-                searchController: _searchController,
-                headerTextStyle: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w500),
-                isFullScreen: false,
-                builder: (context, controller) {
-                  return SearchBar(
-                    leading: const Icon(
-                      Icons.search,
-                    ),
-                    padding: const MaterialStatePropertyAll(
-                      EdgeInsets.symmetric(horizontal: 16.0),
-                    ),
-                    controller: controller,
-                    onTap: () => controller.openView(),
-                    textStyle: const MaterialStatePropertyAll(
-                      TextStyle(
-                        fontWeight: FontWeight.w500,
-                        // color: Colors.white,
-                      ),
-                    ),
-                    shape: const MaterialStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(16)),
-                        side: BorderSide.none,
-                      ),
-                    ),
-                    constraints: const BoxConstraints(
-                      minHeight: 48,
-                      maxHeight: 48,
-                    ),
-                  );
-                },
-                suggestionsBuilder: (context, controller) {
-                  return widget.data
-                      .where((data) => data
-                          .toString()
-                          .toLowerCase()
-                          .contains(controller.text.toLowerCase()))
-                      .map((item) {
-                    final name = item['name'] as String;
-                    return ListTile(
-                      title: Text(name),
-                      onTap: () {},
-                    );
-                  }).toList();
-                },
+              Row(
+                children: [
+                  IconButton(onPressed: ()=> Navigator.pop(context), icon: const Icon(Icons.arrow_back)),
+                  const Gap(8),
+                  SearchContainer(_searchController, data: data),
+                ],
               ),
               const Gap(16),
               Text(widget.name, style: Theme.of(context).textTheme.titleLarge),
-              Text(widget.description,
-                  style: Theme.of(context).textTheme.labelMedium, textAlign: TextAlign.justify,),
+              Text(
+                widget.description,
+                style: Theme.of(context).textTheme.labelMedium,
+                textAlign: TextAlign.justify,
+              ),
               const Gap(16),
               Expanded(
                 flex: 2,
