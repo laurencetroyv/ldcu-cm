@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
@@ -6,12 +7,12 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:ldcu/src/constants/constants.dart';
+import 'package:ldcu/src/function/request_destination.dart';
 import 'package:ldcu/src/models/env_model.dart';
-import 'package:ldcu/src/models/settings_model.dart';
 import 'package:ldcu/src/pages/building_information.dart';
-import 'package:ldcu/src/provider/settings_provider.dart';
 import 'package:ldcu/src/provider/user_position.dart';
 import 'package:ldcu/src/widgets/search_container.dart';
 
@@ -38,11 +39,9 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
-  String googleAPiKey = Env.googleMapApiKey;
 
   @override
   Widget build(BuildContext context) {
-    SettingsModel settings = ref.read(settingsProvider);
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -50,18 +49,14 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
           children: [
             GoogleMap(
               cloudMapId: Env.cloudMapID,
-              rotateGesturesEnabled: true,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              mapType: settings.mapType ? MapType.hybrid : MapType.normal,
+              mapType: MapType.normal,
               initialCameraPosition: _kGooglePlex,
               zoomControlsEnabled: false,
-              buildingsEnabled: false,
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
               compassEnabled: true,
-              markers: _markers(),
+              markers: _markers(ref),
               polylines: Set<Polyline>.of(polylines.values),
             ),
             SearchContainer(_searchController, data: buildings)
@@ -81,29 +76,70 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
   _addPolyLine() {
     PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
-        polylineId: id, color: Colors.red, points: polylineCoordinates);
+      polylineId: id,
+      color: const Color(0xFF89201a),
+      points: polylineCoordinates,
+    );
     polylines[id] = polyline;
     setState(() {});
   }
 
-  _getPolyline(LatLng origin, LatLng destination) async {
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      googleAPiKey,
-      PointLatLng(origin.latitude, origin.longitude),
-      PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.walking,
-    );
-
-    print(result);
-    if (result.points.isNotEmpty) {
-      for (PointLatLng point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      }
-    }
-    _addPolyLine();
+  _removePolyLine() {
+    polylineCoordinates.clear();
+    polylines.clear();
+    setState(() {});
   }
 
-  Set<Marker> _markers() {
+  _scaffoldMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  _getPolyline(LatLng origin, LatLng destination) async {
+    _removePolyLine();
+    final request = requestDestination(origin, destination);
+
+    final response = await http.post(
+      request[0] as Uri,
+      headers: request[1] as Map<String, String>,
+      body: request[2],
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+
+      if (responseData.containsKey("error")) {
+        _scaffoldMessage(responseData['error']);
+      } else if (responseData.containsKey("routes")) {
+        String encoded =
+            responseData['routes'][0]['polyline']['encodedPolyline'];
+        final result = polylinePoints.decodePolyline(encoded);
+
+        if (result.isEmpty) {
+          _scaffoldMessage("No routes found");
+        } else {
+          for (PointLatLng point in result) {
+            polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+          }
+          _addPolyLine();
+        }
+      } else {
+        _scaffoldMessage(
+          "No routes found. Something might be wrong with request data",
+        );
+      }
+    } else {
+      _scaffoldMessage(
+        'Request failed with status: ${response.statusCode} | Response body: ${response.body}',
+      );
+    }
+  }
+
+  Set<Marker> _markers(WidgetRef ref) {
     final origin = ref.read(userPositionProvider);
     return {
       Marker(
@@ -341,6 +377,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
                       ),
                     ),
                     onPressed: () async {
+                      _removePolyLine();
                       await _getPolyline(origin, destination);
                     },
                     child: const Row(
