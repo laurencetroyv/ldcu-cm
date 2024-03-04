@@ -20,18 +20,6 @@ class SwitchMapNotifier extends StateNotifier<SettingsModel> {
     prefs.setString('settings', state.toString());
   }
 
-  void switchMapTheme(bool value) {
-    state = state.copyWith(mapThemeMode: value);
-    settingsBox.put('settings', state);
-    prefs.setString('settings', state.toString());
-  }
-
-  void switchMapType(bool value) {
-    state = state.copyWith(mapType: value);
-    settingsBox.put('settings', state);
-    prefs.setString('settings', state.toString());
-  }
-
   void setState(SettingsModel settings) {
     state = settings;
   }
