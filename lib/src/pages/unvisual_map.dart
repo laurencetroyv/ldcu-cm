@@ -99,7 +99,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
                       const Icon(Icons.timer, size: 16),
                       const Gap(4),
                       Text(
-                        "Duration since started: ${durationSinceEpoch ~/ 60 == 0 ? null : "${durationSinceEpoch ~/ 60} min"} ${durationSinceEpoch % 60} sec",
+                        "Duration since started:${durationSinceEpoch ~/ 60 == 0 ? "" : " ${durationSinceEpoch ~/ 60} min"} ${durationSinceEpoch % 60} sec",
                         style: Theme.of(context).textTheme.labelMedium,
                       ),
                       Expanded(
@@ -113,7 +113,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
                                 _durationSinceEpoch = 0;
                                 _removePolyLine();
                                 _scaffoldMessage(
-                                  "Navigation stopped, the time since started was: ${durationSinceEpoch ~/ 60 == 0 ? null : "${durationSinceEpoch ~/ 60} min"} ${durationSinceEpoch % 60} sec",
+                                  "Navigation stopped, the time since started was:${durationSinceEpoch ~/ 60 == 0 ? "" : " ${durationSinceEpoch ~/ 60} min"} ${durationSinceEpoch % 60} sec",
                                 );
                               },
                               child: const Text("Stop"),
@@ -561,7 +561,36 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
                         const EdgeInsets.only(left: 8, right: 10),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () async {
+                      Navigator.pop(context);
+                      _removePolyLine();
+                      await _getPolyline(origin, destination);
+                      LatLngBounds bounds = getBounds(polylineCoordinates);
+
+                      _controller.future.then((controller) {
+                        controller.animateCamera(
+                          CameraUpdate.newLatLngBounds(
+                            bounds,
+                            50.0,
+                          ),
+                        );
+                      });
+
+                      setState(() => timerStarted = !timerStarted);
+
+                      if (timerStarted) {
+                        _timer = Timer.periodic(
+                          const Duration(seconds: 1),
+                          (timer) {
+                            setState(() {
+                              _durationSinceEpoch = timer.tick;
+                            });
+                          },
+                        );
+                      } else {
+                        _timer?.cancel();
+                      }
+                    },
                     child: const Row(
                       children: [
                         Icon(Icons.navigation, size: 16),
