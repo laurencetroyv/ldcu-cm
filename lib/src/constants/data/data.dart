@@ -23,4 +23,6 @@ const buildings = [
   kNacBuildingName,
   kEacBuildingName,
   kRodelsaName,
+  kLibraryName,
+  kCivilBuildingName,
 ];

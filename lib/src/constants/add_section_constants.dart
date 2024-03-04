@@ -1,7 +1,7 @@
 const kAddSchedule = "Add Schedule";
 const kName = "Subject Name";
 const kNameHint = "Enter the subject name";
-const kCode = "Code";
+const kCode = "Subject Code";
 const kCodeHint = "Enter the subject code";
 const kProf = "Prof. (Optional)";
 const kProfHint = "Enter the subject professor";
