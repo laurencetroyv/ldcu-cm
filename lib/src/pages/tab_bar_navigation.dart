@@ -23,7 +23,11 @@ class TabBarNavigation extends ConsumerWidget {
     return SafeArea(
       child: DefaultTabController(
         length: 6,
-        initialIndex: currentDay > 6 ? 0 : currentDay - 1,
+        initialIndex: currentDay > 6
+            ? 0
+            : currentDay == 0
+                ? 0
+                : currentDay - 1,
         child: Scaffold(
           appBar: AppBar(
             title: const Text(kAppName),
@@ -43,7 +47,8 @@ class TabBarNavigation extends ConsumerWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AddSchedule()),
+                    MaterialPageRoute(
+                        builder: (context) => const AddSchedule()),
                   );
                 },
               ),
