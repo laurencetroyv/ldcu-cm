@@ -48,7 +48,7 @@ class SettingsModel {
       isDarkMode: false,
       isMap3D: false,
       mapThemeMode: false,
-      mapType: true,
+      mapType: false,
     );
   }
 
