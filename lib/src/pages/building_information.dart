@@ -50,9 +50,17 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
             children: [
               Row(
                 children: [
-                  IconButton(onPressed: ()=> Navigator.pop(context), icon: const Icon(Icons.arrow_back)),
+                  IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back)),
                   const Gap(8),
-                  SearchContainer(_searchController, data: data),
+                  Expanded(
+                    child: SearchContainer(
+                      _searchController,
+                      data: data,
+                      onTap: (value) {},
+                    ),
+                  ),
                 ],
               ),
               const Gap(16),
