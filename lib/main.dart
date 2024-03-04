@@ -91,15 +91,15 @@ class MainApp extends ConsumerWidget {
   }
 
   Future<bool> fetchData(WidgetRef ref) async {
-    final settingPrefs = prefs.getString("settings");
-    if (settingPrefs == null) {
-      await prefs.setString(
-          "settings", SettingsModel.initialSettings().toString());
-    } else {
-      ref
-          .read(settingsProvider.notifier)
-          .setState(SettingsModel.fromJson(settingPrefs));
-    }
+    // final settingPrefs = prefs.getString("settings");
+    // if (settingPrefs == null) {
+    //   await prefs.setString(
+    //       "settings", SettingsModel.initialSettings().toString());
+    // } else {
+    //   ref
+    //       .read(settingsProvider.notifier)
+    //       .setState(SettingsModel.fromJson(settingPrefs));
+    // }
     final position = await _determinePosition();
     ref
         .read(userPositionProvider.notifier)
