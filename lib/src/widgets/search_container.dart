@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SearchContainer extends ConsumerWidget {
-  const SearchContainer(this._searchController,
-      {super.key, required this.data});
+  const SearchContainer(
+    this._searchController, {
+    super.key,
+    required this.data,
+    required this.onTap,
+  });
   final SearchController _searchController;
   final List data;
+  final void Function(String value)? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,7 +48,9 @@ class SearchContainer extends ConsumerWidget {
           return data.map((item) {
             return ListTile(
               title: Text(item),
-              onTap: () {},
+              onTap: () {
+                onTap?.call(item);
+              },
             );
           }).toList();
         },
