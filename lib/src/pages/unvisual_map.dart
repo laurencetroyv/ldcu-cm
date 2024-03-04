@@ -39,9 +39,16 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
   Map<PolylineId, Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
   PolylinePoints polylinePoints = PolylinePoints();
+  int _duration = 0;
+  double _distance = 0;
+  int _durationSinceEpoch = 0;
+
+  Timer? _timer;
+  bool timerStarted = false;
 
   @override
   Widget build(BuildContext context) {
+    int durationSinceEpoch = _durationSinceEpoch;
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -55,11 +62,69 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
               compassEnabled: true,
               markers: _markers(ref),
               polylines: Set<Polyline>.of(polylines.values),
             ),
-            SearchContainer(_searchController, data: buildings)
+            SearchContainer(
+              _searchController,
+              data: buildings,
+              onTap: (value) {
+                _searchController.closeView(value);
+                _findBuilding(value);
+              },
+            ),
+            if (timerStarted)
+              Positioned(
+                left: 16,
+                bottom: 16,
+                right: 88,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.timer, size: 16),
+                      const Gap(4),
+                      Text(
+                        "Duration since started: ${durationSinceEpoch ~/ 60 == 0 ? null : "${durationSinceEpoch ~/ 60} min"} ${durationSinceEpoch % 60} sec",
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                setState(() => timerStarted = !timerStarted);
+                                _timer?.cancel();
+                                _durationSinceEpoch = 0;
+                                _removePolyLine();
+                                _scaffoldMessage(
+                                  "Navigation stopped, the time since started was: ${durationSinceEpoch ~/ 60 == 0 ? null : "${durationSinceEpoch ~/ 60} min"} ${durationSinceEpoch % 60} sec",
+                                );
+                              },
+                              child: const Text("Stop"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
@@ -119,12 +184,21 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
             responseData['routes'][0]['polyline']['encodedPolyline'];
         final result = polylinePoints.decodePolyline(encoded);
 
+        final durationString = responseData['routes'][0]['duration'] as String;
+
+        _duration = int.parse(
+          durationString.substring(0, durationString.length - 1),
+        );
+
+        _distance = responseData['routes'][0]['distanceMeters'];
+
         if (result.isEmpty) {
           _scaffoldMessage("No routes found");
         } else {
           for (PointLatLng point in result) {
             polylineCoordinates.add(LatLng(point.latitude, point.longitude));
           }
+
           _addPolyLine();
         }
       } else {
@@ -139,6 +213,25 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
     }
   }
 
+  LatLngBounds getBounds(List<LatLng> points) {
+    double south = points[0].latitude;
+    double west = points[0].longitude;
+    double north = points[0].latitude;
+    double east = points[0].longitude;
+
+    for (LatLng point in points) {
+      south = south < point.latitude ? south : point.latitude;
+      west = west < point.longitude ? west : point.longitude;
+      north = north > point.latitude ? north : point.latitude;
+      east = east > point.longitude ? east : point.longitude;
+    }
+
+    return LatLngBounds(
+      southwest: LatLng(south, west),
+      northeast: LatLng(north, east),
+    );
+  }
+
   Set<Marker> _markers(WidgetRef ref) {
     final origin = ref.read(userPositionProvider);
     return {
@@ -146,7 +239,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         markerId: const MarkerId('origin'),
         position: origin,
         infoWindow: const InfoWindow(title: 'Origin'),
-        icon: BitmapDescriptor.defaultMarker,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
       ),
       Marker(
         markerId: const MarkerId('lcc'),
@@ -341,6 +434,66 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
     };
   }
 
+  void showTimeAndDistance(BuildContext context, String buildingName) {
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Going to $buildingName",
+                  style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                "${_duration ~/ 60} min (${(_distance / 1000).toStringAsFixed(2)} km)",
+              ),
+              Text(
+                "Approximate time and distance from your current location. Click the 'Start' button to start navigating.",
+                style: Theme.of(context).textTheme.labelMedium,
+                textAlign: TextAlign.justify,
+              ),
+              const Gap(8),
+              FilledButton(
+                style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                    const EdgeInsets.only(left: 8, right: 10),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  setState(() => timerStarted = !timerStarted);
+
+                  if (timerStarted) {
+                    _timer = Timer.periodic(
+                      const Duration(seconds: 1),
+                      (timer) {
+                        setState(() {
+                          _durationSinceEpoch = timer.tick;
+                        });
+                      },
+                    );
+                  } else {
+                    _timer?.cancel();
+                  }
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.navigation, size: 16),
+                    const Gap(4),
+                    Text(timerStarted ? "Cacnel" : "Start"),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void onMarkerTapped(
     BuildContext context,
     String buildingName,
@@ -379,6 +532,19 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
                     onPressed: () async {
                       _removePolyLine();
                       await _getPolyline(origin, destination);
+                      LatLngBounds bounds = getBounds(polylineCoordinates);
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Navigator.pop(context);
+                        _controller.future.then((controller) {
+                          controller.animateCamera(
+                            CameraUpdate.newLatLngBounds(
+                              bounds,
+                              50.0,
+                            ),
+                          );
+                        });
+                        showTimeAndDistance(context, buildingName);
+                      });
                     },
                     child: const Row(
                       children: [
@@ -464,5 +630,119 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         );
       },
     );
+  }
+
+  void _findBuilding(String value) {
+    if (value == kLccBuildingName) {
+      onMarkerTapped(
+        context,
+        kLccBuildingName,
+        kLccBuildingDesc,
+        lccData,
+        "assets/liceo-campus-map.gltf",
+        kLccImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48538, 124.63889),
+      );
+    } else if (value == kSacBuildingName) {
+      onMarkerTapped(
+        context,
+        kSacBuildingName,
+        kSacBuildingDec,
+        sacData,
+        "assets/liceo-campus-map.gltf",
+        kSacImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48486, 124.63890),
+      );
+    } else if (value == kRodelsaName) {
+      onMarkerTapped(
+        context,
+        kRodelsaName,
+        kRodelsaDesc,
+        rhData,
+        "assets/liceo-campus-map.gltf",
+        kRodelsaImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48599, 124.63902),
+      );
+    } else if (value == kWacBuildingName) {
+      onMarkerTapped(
+        context,
+        kWacBuildingName,
+        kWacBuildingDesc,
+        wacData,
+        "assets/liceo-campus-map.gltf",
+        kWacImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48676, 124.63911),
+      );
+    } else if (value == kNacBuildingName) {
+      onMarkerTapped(
+        context,
+        kNacBuildingName,
+        kNacBuildingDesc,
+        nacData,
+        "assets/liceo-campus-map.gltf",
+        kNacImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48705, 124.63954),
+      );
+    } else if (value == kLibraryName) {
+      onMarkerTapped(
+        context,
+        kLibraryName,
+        kLibraryDesc,
+        [],
+        "assets/liceo-campus-map.gltf",
+        kLibraryImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48570, 124.63950),
+      );
+    } else if (value == kEacBuildingName) {
+      onMarkerTapped(
+        context,
+        kEacBuildingName,
+        kEacBuildingDesc,
+        eacData,
+        "assets/liceo-campus-map.gltf",
+        kEacImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48649, 124.63958),
+      );
+    } else if (value == kCivilBuildingName) {
+      onMarkerTapped(
+        context,
+        kCivilBuildingName,
+        kCivilBuildingDesc,
+        [],
+        "assets/liceo-campus-map.gltf",
+        kCivilImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.48473, 124.63906),
+      );
+    } else if (value == kChurchName) {
+      onMarkerTapped(
+        context,
+        kChurchName,
+        kChurchDesc,
+        [],
+        "assets/liceo-campus-map.gltf",
+        kChurchImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.4852, 124.63932),
+      );
+    } else if (value == kCanteenName) {
+      onMarkerTapped(
+        context,
+        kCanteenName,
+        kCanteenDesc,
+        [],
+        "assets/liceo-campus-map.gltf",
+        kCanteenImages,
+        const LatLng(8.4861317, 124.6394635),
+        const LatLng(8.4864, 124.63986),
+      );
+    }
   }
 }
