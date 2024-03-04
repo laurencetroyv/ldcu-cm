@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
 
 import 'package:ldcu/src/models/settings_model.dart';
 import 'package:ldcu/src/provider/settings_provider.dart';
@@ -14,8 +13,6 @@ class Settings extends ConsumerWidget {
     SettingsModel settings = ref.watch(settingsProvider);
     bool isDark = settings.isDarkMode;
     bool isMap3D = settings.isMap3D;
-    bool isMapThemeMode = settings.mapThemeMode;
-    bool isMapType = settings.mapType;
 
     return SafeArea(
       child: Scaffold(
@@ -103,92 +100,6 @@ class Settings extends ConsumerWidget {
                   );
                 },
               ),
-              const Gap(8),
-              if (!isMap3D)
-                ListTile(
-                  leading: const Icon(Icons.map),
-                  title: const Text('Choose Map Style'),
-                  subtitle:
-                      const Text('Choose between Hybrid and Normal style.'),
-                  onTap: () async {
-                    _showMyDialog(
-                      context,
-                      title: "Choose Map Style",
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text("Map Type"),
-                          RadioListTile<bool>(
-                            title: const Text('Hybrid'),
-                            value: true,
-                            groupValue: isMapType,
-                            onChanged: (bool? value) {
-                              ref
-                                  .read(settingsProvider.notifier)
-                                  .switchMapType(true);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          RadioListTile<bool>(
-                            title: const Text('Normal'),
-                            value: false,
-                            groupValue: isMapType,
-                            onChanged: (bool? value) {
-                              ref
-                                  .read(settingsProvider.notifier)
-                                  .switchMapType(false);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              if (!isMap3D && !isMapType)
-                ListTile(
-                  leading: const Icon(Icons.map),
-                  title: const Text('Choose Map Theme'),
-                  subtitle: const Text('Choose between light and dark theme.'),
-                  onTap: () async {
-                    _showMyDialog(
-                      context,
-                      title: "Choose Map Theme",
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text("Map Theme"),
-                          RadioListTile<bool>(
-                            title: const Text('Light'),
-                            value: false,
-                            groupValue: isMapThemeMode,
-                            onChanged: (bool? value) {
-                              ref
-                                  .read(settingsProvider.notifier)
-                                  .switchMapTheme(false);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          RadioListTile<bool>(
-                            title: const Text('Dark'),
-                            value: true,
-                            groupValue: isMapThemeMode,
-                            onChanged: (bool? value) {
-                              ref
-                                  .read(settingsProvider.notifier)
-                                  .switchMapTheme(true);
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
             ],
           ),
         ),
