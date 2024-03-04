@@ -37,7 +37,3 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/NAC/
-    - assets/EAC/
-    - assets/SAC/
-    - assets/WAC/
