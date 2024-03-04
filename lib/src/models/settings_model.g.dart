@@ -19,23 +19,17 @@ class SettingsModelAdapter extends TypeAdapter<SettingsModel> {
     return SettingsModel(
       isDarkMode: fields[0] as bool,
       isMap3D: fields[1] as bool,
-      mapThemeMode: fields[2] as bool,
-      mapType: fields[3] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SettingsModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(2)
       ..writeByte(0)
       ..write(obj.isDarkMode)
       ..writeByte(1)
-      ..write(obj.isMap3D)
-      ..writeByte(2)
-      ..write(obj.mapThemeMode)
-      ..writeByte(3)
-      ..write(obj.mapType);
+      ..write(obj.isMap3D);
   }
 
   @override
