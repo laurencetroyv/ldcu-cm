@@ -10,8 +10,8 @@ const RESOURCES = {"assets/AssetManifest.bin": "b3a981a261dc9d4b5b5d8c70d2df7a48
 "assets/assets/liceo-campus-map.gltf": "07f45a849614448bbc68b88fbdfce701",
 "assets/assets/no-class.svg": "59dd083da66e6d0bce5e497b35aa75ea",
 "assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
-"assets/fonts/MaterialIcons-Regular.otf": "1c3168e4376a2cb742ab003cc7591c9e",
-"assets/NOTICES": "f30890c89212762d9bf80170db897c3e",
+"assets/fonts/MaterialIcons-Regular.otf": "7b80143d682b9c613d77fb60b76a29cf",
+"assets/NOTICES": "6309f5207897379ea346302636489b18",
 "assets/packages/o3d/assets/model-viewer.min.js": "7f3dd99a5c27b30d285da8e8fd969b18",
 "assets/packages/o3d/assets/template.html": "24a1f29951029adea5122572451138fc",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
@@ -31,9 +31,9 @@ const RESOURCES = {"assets/AssetManifest.bin": "b3a981a261dc9d4b5b5d8c70d2df7a48
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "33b5e820806df3f383b62cd5bf375fa6",
-"/": "33b5e820806df3f383b62cd5bf375fa6",
-"main.dart.js": "83133c54cd7c38f292be75c55f62e2cd",
+"index.html": "220d4768cd8af5d32e3408de87526af9",
+"/": "220d4768cd8af5d32e3408de87526af9",
+"main.dart.js": "6dfe330caa76255c9be9e88c1a31c033",
 "manifest.json": "3ea76a7b28ea4d17d4dd2b2fd2fedce9",
 "version.json": "83a2869b011748a9a2693e10eb1d9c45"};
 // The application shell files that are downloaded before a service worker can
