@@ -11,12 +11,10 @@ class BuildingInformation extends ConsumerStatefulWidget {
     super.key,
     required this.name,
     required this.description,
-    required this.mapSrc,
   });
   final String name;
   final String description;
   final List<Map<String, Object>> data;
-  final String mapSrc;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -57,7 +55,7 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => VisualMap(widget.mapSrc)),
+                          builder: (context) => const VisualMap()),
                     );
                   },
                   child: const Text("View Campus 3D Map")),
