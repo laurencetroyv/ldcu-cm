@@ -53,7 +53,7 @@ class MainApp extends ConsumerWidget {
         return MaterialApp(
           home: const UnvisualMap(),
           debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.system,
+          themeMode: ThemeMode.light,
           theme: ThemeData.light().copyWith(
             colorScheme: ThemeData.light().colorScheme.copyWith(
                   primary: const Color(0xFF89201a),
