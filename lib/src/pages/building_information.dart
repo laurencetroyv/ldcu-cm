@@ -57,10 +57,10 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => VisualMap(widget.name)),
+                          builder: (context) => VisualMap(widget.mapSrc)),
                     );
                   },
-                  child: const Text("View 3D Map")),
+                  child: const Text("View Campus 3D Map")),
               const Gap(16),
               Expanded(
                 child: ListView.builder(
