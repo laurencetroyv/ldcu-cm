@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ldcu/src/constants/constants.dart';
+
 class SearchContainer extends ConsumerWidget {
   const SearchContainer(
     this._searchController, {
     super.key,
-    required this.data,
     required this.onTap,
   });
   final SearchController _searchController;
-  final List data;
-  final void Function(String value)? onTap;
+  final void Function(List<String> value) onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,11 +45,26 @@ class SearchContainer extends ConsumerWidget {
           );
         },
         suggestionsBuilder: (context, controller) {
-          return data.map((item) {
+          return data.where((item) {
+            String name;
+            if (item['code'] != null) {
+              name = "${item['name']} - ${item['code']}";
+            } else {
+              name = "${item['name']}";
+            }
+            return name.toLowerCase().contains(controller.text.toLowerCase());
+          }).map((item) {
+            String name;
+            if (item['code'] != null) {
+              name = "${item['name']} - ${item['code']}";
+            } else {
+              name = "${item['name']}";
+            }
+
             return ListTile(
-              title: Text(item),
+              title: Text(name),
               onTap: () {
-                onTap?.call(item);
+                onTap.call([name, item['building'] as String]);
               },
             );
           }).toList();

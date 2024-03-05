@@ -49,6 +49,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
   @override
   Widget build(BuildContext context) {
     int durationSinceEpoch = _durationSinceEpoch;
+
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -70,17 +71,16 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
             ),
             SearchContainer(
               _searchController,
-              data: buildings,
               onTap: (value) {
-                _searchController.closeView(value);
-                _findBuilding(value);
+                _searchController.closeView(value[0]);
+                _findBuilding(value[1]);
               },
             ),
             if (timerStarted)
               Positioned(
                 left: 16,
                 bottom: 16,
-                right: 88,
+                right: 16,
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -126,13 +126,6 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
                 ),
               ),
           ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color(0xFF89201a),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(Icons.arrow_back, color: Colors.white),
         ),
       ),
     );
@@ -239,7 +232,6 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         markerId: const MarkerId('origin'),
         position: origin,
         infoWindow: const InfoWindow(title: 'Origin'),
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
       ),
       Marker(
         markerId: const MarkerId('lcc'),

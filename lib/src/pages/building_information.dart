@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:o3d/o3d.dart';
 
-import 'package:ldcu/src/widgets/search_container.dart';
+import 'package:ldcu/src/pages/visual_map.dart';
 
 class BuildingInformation extends ConsumerStatefulWidget {
   const BuildingInformation(
@@ -26,7 +25,6 @@ class BuildingInformation extends ConsumerStatefulWidget {
 
 class _BuildingInformationState extends ConsumerState<BuildingInformation> {
   final _searchController = SearchController();
-  final _o3d = O3DController();
 
   String get search => _searchController.text;
 
@@ -34,45 +32,37 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
   Widget build(BuildContext context) {
     final sortedData = widget.data;
 
-    final data = sortedData.where((data) {
-      return data.toString().toLowerCase().contains(search.toLowerCase());
-    }).map((item) {
-      final name = item['name'] as String;
-      return name;
-    }).toList();
-
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.name),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back)),
-                  const Gap(8),
-                  Expanded(
-                    child: SearchContainer(
-                      _searchController,
-                      data: data,
-                      onTap: (value) {},
-                    ),
-                  ),
-                ],
-              ),
-              const Gap(16),
-              Text(widget.name, style: Theme.of(context).textTheme.titleLarge),
               Text(
                 widget.description,
                 style: Theme.of(context).textTheme.labelMedium,
                 textAlign: TextAlign.justify,
               ),
               const Gap(16),
+              FilledButton(
+                  style: ButtonStyle(
+                    textStyle: MaterialStateProperty.all(
+                        const TextStyle(color: Colors.white)),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => VisualMap(widget.name)),
+                    );
+                  },
+                  child: const Text("View 3D Map")),
+              const Gap(16),
               Expanded(
-                flex: 2,
                 child: ListView.builder(
                   itemCount: sortedData.length,
                   itemBuilder: (context, index) {
@@ -89,16 +79,8 @@ class _BuildingInformationState extends ConsumerState<BuildingInformation> {
                           Text("floor: ${item['floor'] as int}"),
                         ],
                       ),
-                      onTap: () {},
                     );
                   },
-                ),
-              ),
-              Expanded(
-                child: O3D.asset(
-                  controller: _o3d,
-                  src: widget.mapSrc,
-                  cameraOrbit: CameraOrbit(150, 70, 0),
                 ),
               ),
             ],

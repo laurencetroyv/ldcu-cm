@@ -4,29 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:ldcu/src/models/section_model.dart';
-import 'package:ldcu/src/models/settings_model.dart';
-import 'package:ldcu/src/pages/tab_bar_navigation.dart';
-import 'package:ldcu/src/provider/settings_provider.dart';
+import 'package:ldcu/src/pages/unvisual_map.dart';
 import 'package:ldcu/src/provider/user_position.dart';
-
-late SharedPreferences prefs;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  prefs = await SharedPreferences.getInstance();
-
-  await BoxCollection.open('ldcu', {'settings', 'schedule'});
-
-  Hive.registerAdapter(SettingsModelAdapter());
-  Hive.registerAdapter(SectionModelAdapter());
-
-  Hive.openBox<SettingsModel>('settings');
-  Hive.openBox<SectionModel>('schedule');
-
   runApp(const ProviderScope(child: MainApp()));
 }
 
@@ -35,8 +18,6 @@ class MainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool isDark = ref.watch(settingsProvider).isDarkMode;
-
     return FutureBuilder(
       future: fetchData(ref),
       builder: (context, snapshot) {
@@ -70,9 +51,9 @@ class MainApp extends ConsumerWidget {
         }
 
         return MaterialApp(
-          home: const TabBarNavigation(),
+          home: const UnvisualMap(),
           debugShowCheckedModeBanner: false,
-          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          themeMode: ThemeMode.system,
           theme: ThemeData.light().copyWith(
             colorScheme: ThemeData.light().colorScheme.copyWith(
                   primary: const Color(0xFF89201a),
@@ -91,15 +72,6 @@ class MainApp extends ConsumerWidget {
   }
 
   Future<bool> fetchData(WidgetRef ref) async {
-    // final settingPrefs = prefs.getString("settings");
-    // if (settingPrefs == null) {
-    //   await prefs.setString(
-    //       "settings", SettingsModel.initialSettings().toString());
-    // } else {
-    //   ref
-    //       .read(settingsProvider.notifier)
-    //       .setState(SettingsModel.fromJson(settingPrefs));
-    // }
     final position = await _determinePosition();
     ref
         .read(userPositionProvider.notifier)

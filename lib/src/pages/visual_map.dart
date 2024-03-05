@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:o3d/o3d.dart';
 
 class VisualMap extends ConsumerStatefulWidget {
-  const VisualMap({super.key});
+  const VisualMap(this.name, {super.key});
+  final String name;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _VisualMapState();
