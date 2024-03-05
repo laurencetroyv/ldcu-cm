@@ -8,13 +8,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:label_marker/label_marker.dart';
 
 import 'package:ldcu/src/constants/constants.dart';
 import 'package:ldcu/src/function/request_destination.dart';
 import 'package:ldcu/src/models/env_model.dart';
 import 'package:ldcu/src/pages/building_information.dart';
 import 'package:ldcu/src/provider/user_position.dart';
+import 'package:ldcu/src/widgets/custom_marker.dart';
 import 'package:ldcu/src/widgets/search_container.dart';
 
 class UnvisualMap extends ConsumerStatefulWidget {
@@ -245,325 +245,232 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
     );
   }
 
-  void _markers(WidgetRef ref) {
+  Future<void> _markers(WidgetRef ref) async {
     final origin = ref.read(userPositionProvider);
 
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "Origin",
-            markerId: const MarkerId('origin'),
-            position: origin,
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "LCC",
-            markerId: const MarkerId('lcc'),
-            position: const LatLng(8.48538, 124.63889),
-            onTap: () {
-              setState(() {
-                images = kLccImages;
-              });
-              onMarkerTapped(
-                context,
-                kLccBuildingName,
-                kLccBuildingDesc,
-                lccData,
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48538, 124.63889),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
+    final lcc = await createCustomMarkerIcon("assets/icon/lcc.png");
+    final rh = await createCustomMarkerIcon("assets/icon/rh.png");
+    final nac = await createCustomMarkerIcon("assets/icon/nac.png");
+    final sac = await createCustomMarkerIcon("assets/icon/sac.png");
+    final wac = await createCustomMarkerIcon("assets/icon/wac.png");
+    final eac = await createCustomMarkerIcon("assets/icon/eac.png");
+    final lib = await createCustomMarkerIcon("assets/icon/lib.png");
+    final engr = await createCustomMarkerIcon("assets/icon/engr-abm.png");
+    final church = await createCustomMarkerIcon("assets/icon/church.png");
+    final canteen = await createCustomMarkerIcon("assets/icon/canteen.png");
+    final originIcon = await createCustomMarkerIcon("assets/icon/you.png");
 
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "SAC",
-            markerId: const MarkerId('sac'),
-            position: const LatLng(8.48486, 124.63890),
-            onTap: () {
-              setState(() {
-                images = kSacImages;
-              });
-              onMarkerTapped(
-                context,
-                kSacBuildingName,
-                kSacBuildingDec,
-                sacData,
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48486, 124.63890),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "Rodelsa Hall",
-            markerId: const MarkerId('rodelsa'),
-            position: const LatLng(8.48599, 124.63902),
-            onTap: () {
-              setState(() {
-                images = kRodelsaImages;
-              });
-              onMarkerTapped(
-                context,
-                kRodelsaName,
-                kRodelsaDesc,
-                rhData,
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48599, 124.63902),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "WAC",
-            markerId: const MarkerId('wac'),
-            position: const LatLng(8.48676, 124.63911),
-            onTap: () {
-              setState(() {
-                images = kWacImages;
-              });
-              onMarkerTapped(
-                context,
-                kWacBuildingName,
-                kWacBuildingDesc,
-                wacData,
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48676, 124.63911),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "NAC",
-            markerId: const MarkerId('nac'),
-            position: const LatLng(8.48705, 124.63954),
-            onTap: () {
-              setState(() {
-                images = kNacImages;
-              });
-              onMarkerTapped(
-                context,
-                kNacBuildingName,
-                kNacBuildingDesc,
-                nacData,
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48705, 124.63954),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "Library",
-            markerId: const MarkerId('lib'),
-            position: const LatLng(8.48570, 124.63950),
-            onTap: () {
-              setState(() {
-                images = kLibraryImages;
-              });
-              onMarkerTapped(
-                context,
-                kLibraryName,
-                kLibraryDesc,
-                [],
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48570, 124.63950),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "EAC",
-            markerId: const MarkerId('eac'),
-            position: const LatLng(8.48649, 124.63958),
-            onTap: () {
-              setState(() {
-                images = kEacImages;
-              });
-              onMarkerTapped(
-                context,
-                kEacBuildingName,
-                kEacBuildingDesc,
-                eacData,
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48649, 124.63958),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "Engineering/ABM",
-            markerId: const MarkerId('engineering'),
-            position: const LatLng(8.48473, 124.63906),
-            onTap: () {
-              setState(() {
-                images = kCivilImages;
-              });
-              onMarkerTapped(
-                context,
-                kCivilBuildingName,
-                kCivilBuildingDesc,
-                [],
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.48473, 124.63906),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "Church",
-            markerId: const MarkerId('church'),
-            position: const LatLng(8.4852, 124.63932),
-            onTap: () {
-              setState(() {
-                images = kChurchImages;
-              });
-              onMarkerTapped(
-                context,
-                kChurchName,
-                kChurchDesc,
-                [],
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.4852, 124.63932),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
-    markers
-        .addLabelMarker(
-          LabelMarker(
-            backgroundColor: const Color(0xFF89201a),
-            textStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            label: "Canteen",
-            markerId: const MarkerId('canteen'),
-            position: const LatLng(8.4864, 124.63986),
-            onTap: () {
-              setState(() {
-                images = kCanteenImages;
-              });
-              onMarkerTapped(
-                context,
-                kCanteenName,
-                kCanteenDesc,
-                [],
-                "assets/liceo-campus-map.gltf",
-                images,
-                origin,
-                const LatLng(8.4864, 124.63986),
-              );
-            },
-          ),
-        )
-        .then((value) => setState(() {}));
+    final marker = {
+      Marker(
+        icon: originIcon,
+        markerId: const MarkerId('origin'),
+        position: origin,
+      ),
+      Marker(
+        markerId: const MarkerId('lcc'),
+        position: const LatLng(8.48538, 124.63889),
+        icon: lcc,
+        onTap: () {
+          setState(() {
+            images = kLccImages;
+          });
+          onMarkerTapped(
+            context,
+            kLccBuildingName,
+            kLccBuildingDesc,
+            lccData,
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48538, 124.63889),
+          );
+        },
+      ),
+      Marker(
+        icon: sac,
+        markerId: const MarkerId('sac'),
+        position: const LatLng(8.48486, 124.63890),
+        onTap: () {
+          setState(() {
+            images = kSacImages;
+          });
+          onMarkerTapped(
+            context,
+            kSacBuildingName,
+            kSacBuildingDec,
+            sacData,
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48486, 124.63890),
+          );
+        },
+      ),
+      Marker(
+        icon: rh,
+        markerId: const MarkerId('rodelsa'),
+        position: const LatLng(8.48599, 124.63902),
+        onTap: () {
+          setState(() {
+            images = kRodelsaImages;
+          });
+          onMarkerTapped(
+            context,
+            kRodelsaName,
+            kRodelsaDesc,
+            rhData,
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48599, 124.63902),
+          );
+        },
+      ),
+      Marker(
+        icon: wac,
+        markerId: const MarkerId('wac'),
+        position: const LatLng(8.48676, 124.63911),
+        onTap: () {
+          setState(() {
+            images = kWacImages;
+          });
+          onMarkerTapped(
+            context,
+            kWacBuildingName,
+            kWacBuildingDesc,
+            wacData,
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48676, 124.63911),
+          );
+        },
+      ),
+      Marker(
+        icon: nac,
+        markerId: const MarkerId('nac'),
+        position: const LatLng(8.48705, 124.63954),
+        onTap: () {
+          setState(() {
+            images = kNacImages;
+          });
+          onMarkerTapped(
+            context,
+            kNacBuildingName,
+            kNacBuildingDesc,
+            nacData,
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48705, 124.63954),
+          );
+        },
+      ),
+      Marker(
+        icon: lib,
+        markerId: const MarkerId('lib'),
+        position: const LatLng(8.48570, 124.63950),
+        onTap: () {
+          setState(() {
+            images = kLibraryImages;
+          });
+          onMarkerTapped(
+            context,
+            kLibraryName,
+            kLibraryDesc,
+            [],
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48570, 124.63950),
+          );
+        },
+      ),
+      Marker(
+        icon: eac,
+        markerId: const MarkerId('eac'),
+        position: const LatLng(8.48649, 124.63958),
+        onTap: () {
+          setState(() {
+            images = kEacImages;
+          });
+          onMarkerTapped(
+            context,
+            kEacBuildingName,
+            kEacBuildingDesc,
+            eacData,
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48649, 124.63958),
+          );
+        },
+      ),
+      Marker(
+        icon: engr,
+        markerId: const MarkerId('engineering'),
+        position: const LatLng(8.48473, 124.63906),
+        onTap: () {
+          setState(() {
+            images = kCivilImages;
+          });
+          onMarkerTapped(
+            context,
+            kCivilBuildingName,
+            kCivilBuildingDesc,
+            [],
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.48473, 124.63906),
+          );
+        },
+      ),
+      Marker(
+        icon: church,
+        markerId: const MarkerId('church'),
+        position: const LatLng(8.4852, 124.63932),
+        onTap: () {
+          setState(() {
+            images = kChurchImages;
+          });
+          onMarkerTapped(
+            context,
+            kChurchName,
+            kChurchDesc,
+            [],
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.4852, 124.63932),
+          );
+        },
+      ),
+      Marker(
+        icon: canteen,
+        markerId: const MarkerId('canteen'),
+        position: const LatLng(8.4864, 124.63986),
+        onTap: () {
+          setState(() {
+            images = kCanteenImages;
+          });
+          onMarkerTapped(
+            context,
+            kCanteenName,
+            kCanteenDesc,
+            [],
+            "assets/o3d/liceo-campus-map.gltf",
+            images,
+            origin,
+            const LatLng(8.4864, 124.63986),
+          );
+        },
+      ),
+    };
+
+    markers.addAll(marker);
+
+    setState(() {});
   }
 
   void showTimeAndDistance(BuildContext context, String buildingName) {
@@ -806,7 +713,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kLccBuildingName,
         kLccBuildingDesc,
         lccData,
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kLccImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48538, 124.63889),
@@ -817,7 +724,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kSacBuildingName,
         kSacBuildingDec,
         sacData,
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kSacImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48486, 124.63890),
@@ -828,7 +735,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kRodelsaName,
         kRodelsaDesc,
         rhData,
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kRodelsaImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48599, 124.63902),
@@ -839,7 +746,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kWacBuildingName,
         kWacBuildingDesc,
         wacData,
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kWacImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48676, 124.63911),
@@ -850,7 +757,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kNacBuildingName,
         kNacBuildingDesc,
         nacData,
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kNacImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48705, 124.63954),
@@ -861,7 +768,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kLibraryName,
         kLibraryDesc,
         [],
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kLibraryImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48570, 124.63950),
@@ -872,7 +779,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kEacBuildingName,
         kEacBuildingDesc,
         eacData,
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kEacImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48649, 124.63958),
@@ -883,7 +790,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kCivilBuildingName,
         kCivilBuildingDesc,
         [],
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kCivilImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.48473, 124.63906),
@@ -894,7 +801,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kChurchName,
         kChurchDesc,
         [],
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kChurchImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.4852, 124.63932),
@@ -905,7 +812,7 @@ class _UnvisualMapState extends ConsumerState<UnvisualMap> {
         kCanteenName,
         kCanteenDesc,
         [],
-        "assets/liceo-campus-map.gltf",
+        "assets/o3d/liceo-campus-map.gltf",
         kCanteenImages,
         const LatLng(8.4861317, 124.6394635),
         const LatLng(8.4864, 124.63986),
